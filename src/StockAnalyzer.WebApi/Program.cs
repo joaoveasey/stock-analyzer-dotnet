@@ -1,10 +1,17 @@
+using DotNetEnv;
 using Microsoft.OpenApi.Models;
+using StockAnalyzer.WebApi.Services;
+using StockAnalyzer.WebApi.Services.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
+
+Env.Load();
 
 builder.Services.AddControllers();
 
 // Add services to the container.
+builder.Services.AddHttpClient<IChatGptService, ChatGptService>();
+
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 builder.Services.AddSwaggerGen(c =>
@@ -13,6 +20,9 @@ builder.Services.AddSwaggerGen(c =>
 });
 
 var app = builder.Build();
+
+app.UseRouting();
+app.MapControllers();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
