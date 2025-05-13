@@ -8,15 +8,17 @@ using StockAnalyzer.WebApi.Services.Interfaces;
 
 namespace StockAnalyzer.WebApi.Controllers;
 
-[Route("api/[controller]")]
+[Route("api/chat")]
 [ApiController]
 public class AnalyzeController : ControllerBase
 {
     private readonly IChatGptService _chatGptService;
+    private readonly IDeepSeekService _deepSeekService;
 
-    public AnalyzeController(IChatGptService chatGptService)
+    public AnalyzeController(IChatGptService chatGptService, IDeepSeekService deepSeekService)
     {
         _chatGptService = chatGptService;
+        _deepSeekService = deepSeekService;
     }
 
     [HttpPost()]
@@ -40,8 +42,16 @@ public class AnalyzeController : ControllerBase
            request.EarningsPerShare, request.Sector
         );
 
-        var answer = await _chatGptService.GetChatGptResponse(prompt);
+        try
+        {
+            var answer = await _deepSeekService.GetDeepSeekResponse(prompt);
+            // var answer = await _chatGptService.GetChatGptResponse(prompt);
 
-        return Ok(answer);
+            return Ok(answer);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, $"Erro ao chamar DeepSeek: {ex.Message}");
+        }
     }   
 }

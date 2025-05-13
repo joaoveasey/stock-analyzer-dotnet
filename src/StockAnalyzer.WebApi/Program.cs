@@ -11,6 +11,7 @@ builder.Services.AddControllers();
 
 // Add services to the container.
 builder.Services.AddHttpClient<IChatGptService, ChatGptService>();
+builder.Services.AddHttpClient<IDeepSeekService, DeepSeekService>();
 
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
