@@ -1,8 +1,8 @@
-﻿namespace StockAnalyzer.WebApi.Models;
+﻿namespace StockAnalyzer.Web.Models;
 
 public class StockAnalysisRequest
 {
-    public string Ticket { get; set; } 
+    public string Ticket { get; set; }
     public decimal CurrentPrice { get; set; } // cotação atual
     public decimal TwelveMonthChange { get; set; } // variação 12 meses
     public decimal PriceToEarnings { get; set; } // preço/lucro (P/L)
