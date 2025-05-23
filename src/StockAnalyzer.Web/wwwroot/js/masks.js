@@ -1,5 +1,7 @@
 ﻿window.applyMoneyMask = (element) => {
-    IMask(element, {
+    element.value = '';
+
+    const mask = IMask(element, {
         mask: 'R$ num',
         blocks: {
             num: {
@@ -7,7 +9,7 @@
                 thousandsSeparator: '.',
                 radix: ',',
                 scale: 2,
-                signed: false
+                signed: false,
             }
         }
     });
@@ -16,6 +18,7 @@
 window.applyPercentMask = (element) => {
     IMask(element, {
         mask: 'num%',
+        lazy: false,
         blocks: {
             num: {
                 mask: Number,

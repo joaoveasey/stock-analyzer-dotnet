@@ -3,57 +3,71 @@
 
 <PageTitle>Consultar Ação</PageTitle>
 
-<h1 class="mb-4 text-primary">Consultar Ação</h1>
+<div class="d-flex align-items-start" style="min-height: 400px;">
+    <div style="flex: 1; max-width: 500px; margin-left: 40px;">
+        <h1 style="font-weight:700; margin-bottom:2rem;">Consultar Ação</h1>
 
-<div class="mb-3">
-    <label for="ticket" class="form-label">Ticket</label>
-    <input type="text" id="ticket" class="form-control" placeholder="Ex: PETR4" @bind="stock.Ticket" />
+        <div class="mb-3">
+            <label for="ticket" class="form-label">Ticket</label>
+            <input type="text" id="ticket" class="form-control" placeholder="Ex: PETR4" @bind="stock.Ticket" />
+        </div>
+
+        <div class="mb-3">
+            <label for="currentPrice" class="form-label">Cotação Atual</label>
+            <input @ref="currentPriceRef" type="text" id="currentPrice" class="form-control" placeholder="R$" @bind="stock.CurrentPrice" />
+        </div>
+
+        <div class="mb-3">
+            <label for="twelveMonthChange" class="form-label">Variação 12 meses</label>
+            <input @ref="changeRef" type="text" id="twelveMonthChange" class="form-control" placeholder="Ex: 15%" @bind="stock.TwelveMonthChange" />
+        </div>
+
+        <div class="mb-3">
+            <label for="priceToEarnings" class="form-label">P/L</label>
+            <input type="text" id="priceToEarnings" class="form-control" placeholder="Ex: 2.50" @bind="stock.PriceToEarnings" />
+        </div>
+
+        <div class="mb-3">
+            <label for="priceToBook" class="form-label">P/VP</label>
+            <input type="text" id="priceToBook" class="form-control" placeholder="Ex: 1.00" @bind="stock.PriceToBook" />
+        </div>
+
+        <div class="mb-3">
+            <label for="dividendYield" class="form-label">Dividend Yield</label>
+            <input @ref="dividendRef" type="text" id="dividendYield" class="form-control" placeholder="Ex: 5%" @bind="stock.DividendYield" />
+        </div>
+
+        <div class="mb-3">
+            <label for="returnOnEquity" class="form-label">ROE</label>
+            <input @ref="roeRef" type="text" id="returnOnEquity" class="form-control" placeholder="Ex: 10%" @bind="stock.ReturnOnEquity" />
+        </div>
+
+        <div class="mb-3">
+            <label for="netMargin" class="form-label">Margem Líquida</label>
+            <input @ref="marginRef" type="text" id="netMargin" class="form-control" placeholder="Ex: 7%" @bind="stock.NetMargin" />
+        </div>
+
+        <div class="mb-3">
+            <label for="earningPerShare" class="form-label">Lucro Por Ação</label>
+            <input type="text" id="earningPerShare" class="form-control" placeholder="Ex: 3,00" @bind="stock.EarningsPerShare" />
+        </div>
+
+        <div class="mb-3">
+            <label for="sector" class="form-label">Setor</label>
+            <input type="text" id="sector" class="form-control" placeholder="Ex: Financeiro" @bind="stock.Sector" />
+        </div>
+
+        <button type="button"
+                style="background-color: #1E3A8A; color: white; border: none; padding: 0.5rem 4rem ;border-radius: 0.4rem; margin-top: 1rem; font-size: 1rem; margin-bottom:2rem">
+            Enviar
+        </button>
+    </div>
+
+    <div style="flex: 1; display: flex; justify-content: center; align-items: center;">
+        <img src="stock.svg" alt="Imagem" style="max-width: 500px; width: 100%; height: auto; border-radius: 8px; margin-top:10rem; margin-left:10rem" />
+    </div>
 </div>
 
-<div class="mb-3">
-    <label for="currentPrice" class="form-label">Cotação Atual</label>
-    <input @ref="currentPriceRef" type="text" id="currentPrice" class="form-control" placeholder="R$" @bind="stock.CurrentPrice" />
-</div>
-
-<div class="mb-3">
-    <label for="twelveMonthChange" class="form-label">Variação 12 meses</label>
-    <input @ref="changeRef" type="text" id="twelveMonthChange" class="form-control" placeholder="Ex: 15%" @bind="stock.TwelveMonthChange" />
-</div>
-
-<div class="mb-3">
-    <label for="priceToEarnings" class="form-label">P/L</label>
-    <input type="text" id="priceToEarnings" class="form-control" placeholder="Ex: 2.50" @bind="stock.PriceToEarnings" />
-</div>
-
-<div class="mb-3">
-    <label for="priceToBook" class="form-label">P/VP</label>
-    <input type="text" id="priceToBook" class="form-control" placeholder="Ex: 1.00" @bind="stock.PriceToBook" />
-</div>
-
-<div class="mb-3">
-    <label for="dividendYield" class="form-label">Dividend Yield</label>
-    <input @ref="dividendRef" type="text" id="dividendYield" class="form-control" placeholder="Ex: 5%" @bind="stock.DividendYield" />
-</div>
-
-<div class="mb-3">
-    <label for="returnOnEquity" class="form-label">ROE</label>
-    <input @ref="roeRef" type="text" id="returnOnEquity" class="form-control" placeholder="Ex: 10%" @bind="stock.ReturnOnEquity" />
-</div>
-
-<div class="mb-3">
-    <label for="netMargin" class="form-label">Margem Líquida</label>
-    <input @ref="marginRef" type="text" id="netMargin" class="form-control" placeholder="Ex: 7%" @bind="stock.NetMargin" />
-</div>
-
-<div class="mb-3">
-    <label for="earningPerShare" class="form-label">Lucro Por Ação</label>
-    <input type="text" id="earningPerShare" class="form-control" placeholder="Ex: 3,00" @bind="stock.EarningsPerShare" />
-</div>
-
-<div class="mb-3">
-    <label for="sector" class="form-label">Setor</label>
-    <input type="text" id="sector" class="form-control" placeholder="Ex: Financeiro" @bind="stock.Sector" />
-</div>
 
 @code {
     private ElementReference currentPriceRef, changeRef, dividendRef, roeRef, marginRef;
