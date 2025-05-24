@@ -6,6 +6,10 @@ h1:focus {
     outline: none;
 }
 
+label {
+    font-weight:600;
+}
+
 a, .btn-link {
     color: #0071c1;
 }

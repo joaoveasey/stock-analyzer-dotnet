@@ -1,11 +1,25 @@
 ﻿@page "/"
+@using StockAnalyzer.Web.Validation
 @inject IJSRuntime JS
+@inject StockAnalyzer.Web.Validation.StockAnalysisRequestValidator Validator
 
 <PageTitle>Consultar Ação</PageTitle>
 
 <div class="d-flex align-items-start" style="min-height: 400px;">
     <div style="flex: 1; max-width: 500px; margin-left: 40px;">
         <h1 style="font-weight:700; margin-bottom:2rem;">Consultar Ação</h1>
+
+        @if (validationErrors.Any())
+        {
+            <div class="alert alert-danger" role="alert" style="font-weight:500; font-size: 1.1rem">
+                <ul class="mb-0">
+                    @foreach (var error in validationErrors)
+                    {
+                        <li>@error</li>
+                    }
+                </ul>
+            </div>
+        }
 
         <div class="mb-3">
             <label for="ticket" class="form-label">Ticket</label>
@@ -58,7 +72,8 @@
         </div>
 
         <button type="button"
-                style="background-color: #1E3A8A; color: white; border: none; padding: 0.5rem 4rem ;border-radius: 0.4rem; margin-top: 1rem; font-size: 1rem; margin-bottom:2rem">
+                style="background-color: #1E3A8A; color: white; border: none; padding: 0.5rem 4rem ;border-radius: 0.4rem; margin-top: 1rem; font-size: 1rem; margin-bottom:2rem"
+                @onclick="SendAsync">
             Enviar
         </button>
     </div>
@@ -71,8 +86,8 @@
 
 @code {
     private ElementReference currentPriceRef, changeRef, dividendRef, roeRef, marginRef;
-
     private StockAnalysisRequest stock = new();
+    protected List<string> validationErrors = new();
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -86,4 +101,18 @@
         }
     }
 
+    private async Task SendAsync()
+    {
+        var sanitizedStock = StockAnalysisRequestSanitizer.Sanitize(stock);
+
+        validationErrors = Validator.Validate(sanitizedStock);
+
+        if (validationErrors.Any())
+        {
+            StateHasChanged();
+            return;
+        }
+
+        // logica de envio dos dados
+    }
 }
