@@ -2,6 +2,7 @@
 @using StockAnalyzer.Web.Validation
 @inject IJSRuntime JS
 @inject StockAnalyzer.Web.Validation.StockAnalysisRequestValidator Validator
+@inject HttpClient Http
 
 <PageTitle>Consultar Ação</PageTitle>
 
@@ -103,16 +104,34 @@
 
     private async Task SendAsync()
     {
-        var sanitizedStock = StockAnalysisRequestSanitizer.Sanitize(stock);
-
-        validationErrors = Validator.Validate(sanitizedStock);
-
-        if (validationErrors.Any())
+        try
         {
-            StateHasChanged();
-            return;
-        }
+            var sanitizedStock = StockAnalysisRequestSanitizer.Sanitize(stock);
+            validationErrors = Validator.Validate(sanitizedStock);
 
-        // logica de envio dos dados
+            if (validationErrors.Any())
+            {
+                StateHasChanged();
+                return;
+            }
+
+            var response = await Http.PostAsJsonAsync("api/chat", sanitizedStock);
+
+            if (response.IsSuccessStatusCode)
+            {
+                await JS.InvokeVoidAsync("alert", "Dados enviados com sucesso!");
+                stock = new StockAnalysisRequest();
+                StateHasChanged();
+            }
+            else
+            {
+                var errorMsg = await response.Content.ReadAsStringAsync();
+                await JS.InvokeVoidAsync("alert", $"Erro ao enviar dados: {errorMsg}");
+            }
+        }
+        catch (Exception ex)
+        {
+            await JS.InvokeVoidAsync("alert", $"Erro: {ex.Message}");
+        }
     }
 }
