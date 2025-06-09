@@ -12,6 +12,9 @@ builder.Services.AddControllers();
 // Add services to the container.
 builder.Services.AddHttpClient<IChatGptService, ChatGptService>();
 builder.Services.AddHttpClient<IDeepSeekService, DeepSeekService>();
+builder.Services.AddScoped<IBrapiService, BrapiService>();
+builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri("https://brapi.dev/api/") });
+
 
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
