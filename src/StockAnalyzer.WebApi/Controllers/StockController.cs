@@ -4,7 +4,7 @@ using StockAnalyzer.WebApi.Services.Interfaces;
 namespace StockAnalyzer.WebApi.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/stocks")]
     public class StocksController : ControllerBase
     {
         private readonly IBrapiService _brapiService;
@@ -21,7 +21,7 @@ namespace StockAnalyzer.WebApi.Controllers
             return Ok(stocks);
         }
 
-        [HttpGet("stock-details")]
+        [HttpGet("details")]
         public async Task<IActionResult> GetStockDetails(string ticket)
         {
             var stocksDetails = await _brapiService.GetStockDetailsAsync(ticket);

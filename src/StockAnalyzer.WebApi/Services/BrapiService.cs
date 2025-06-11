@@ -1,5 +1,6 @@
 ﻿using System.Net.Http.Headers;
 using System.Text.Json;
+using StockAnalyzer.WebApi.Helpers;
 using StockAnalyzer.WebApi.Models;
 using StockAnalyzer.WebApi.Services.Interfaces;
 
@@ -16,11 +17,11 @@ public class BrapiService : IBrapiService
         _config = config;
     }
 
-    public async Task<List<StockAnalysisRequest>> GetAllStocksAsync()
+    public async Task<List<Stocks>> GetAllStocksAsync()
     {
         var token = _config["Brapi:Token"];
         int page = 1, limit = 800;
-        var result = new List<StockAnalysisRequest>();
+        var result = new List<Stocks>();
 
         var request = new HttpRequestMessage(
             HttpMethod.Get,
@@ -32,7 +33,6 @@ public class BrapiService : IBrapiService
 
         var jsonString = await response.Content.ReadAsStringAsync();
 
-        // Supondo que o JSON tenha um array chamado "stocks"
         using var jsonDoc = JsonDocument.Parse(jsonString);
         var root = jsonDoc.RootElement;
 
@@ -40,7 +40,7 @@ public class BrapiService : IBrapiService
         {
             foreach (var stockJson in stocksElement.EnumerateArray())
             {
-                var stock = JsonSerializer.Deserialize<StockAnalysisRequest>(stockJson.GetRawText());
+                var stock = JsonSerializer.Deserialize<Stocks>(stockJson.GetRawText());
                 if (stock != null)
                     result.Add(stock);
             }
@@ -56,7 +56,7 @@ public class BrapiService : IBrapiService
 
         var request = new HttpRequestMessage(
             HttpMethod.Get,
-            $"quote/{ticket}");
+            $"quote/{ticket}?modules=summaryProfile");
         request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
         var response = await _http.SendAsync(request);
@@ -73,7 +73,19 @@ public class BrapiService : IBrapiService
             {
                 var stock = JsonSerializer.Deserialize<StockAnalysisRequest>(stockJson.GetRawText());
                 if (stock != null)
+                {
+                    if (stock.SummaryProfile == null)
+                        stock.SummaryProfile = new SummaryProfile();
+
+                    if (stockJson.TryGetProperty("summaryProfile", out var summaryProfileElem) &&
+                        summaryProfileElem.TryGetProperty("sector", out var sectorElem))
+                    {
+                        stock.SummaryProfile.Sector = SectorTranslator.Translate(sectorElem.GetString());
+                    }
+
+                    stock.SummaryProfile.Sector = SectorTranslator.Translate(stock.SummaryProfile.Sector);
                     result.Add(stock);
+                }
             }
         }
 

@@ -4,6 +4,6 @@ namespace StockAnalyzer.WebApi.Services.Interfaces;
 
 public interface IBrapiService
 {
-    Task<List<StockAnalysisRequest>> GetAllStocksAsync();
+    Task<List<Stocks>> GetAllStocksAsync();
     Task<List<StockAnalysisRequest>> GetStockDetailsAsync(string ticket);
 }

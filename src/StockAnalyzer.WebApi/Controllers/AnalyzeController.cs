@@ -39,7 +39,7 @@ public class AnalyzeController : ControllerBase
            "Inclua um resumo final com pontos positivos, pontos negativos e uma conclusão com viés (neutro, positivo ou negativo) sobre o investimento na ação.",
            request.Ticket, request.CurrentPrice, request.TwelveMonthChange, request.PriceToEarnings,
            request.PriceToBook, request.DividendYield, request.ReturnOnEquity, request.NetMargin,
-           request.EarningsPerShare, request.Sector
+           request.EarningsPerShare, request.SummaryProfile.Sector
         );
 
         try
