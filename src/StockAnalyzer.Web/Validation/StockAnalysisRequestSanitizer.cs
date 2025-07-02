@@ -10,12 +10,12 @@ public class StockAnalysisRequestSanitizer
         {
             Ticket = input.Ticket?.Trim().ToUpperInvariant(),
             CurrentPrice = CleanCurrency(input.CurrentPrice),
-            TwelveMonthChange = CleanPercent(input.TwelveMonthChange),
+            //TwelveMonthChange = CleanPercent(input.TwelveMonthChange),
             PriceToEarnings = CleanDecimal(input.PriceToEarnings),
-            PriceToBook = CleanDecimal(input.PriceToBook),
-            DividendYield = CleanPercent(input.DividendYield),
-            ReturnOnEquity = CleanPercent(input.ReturnOnEquity),
-            NetMargin = CleanPercent(input.NetMargin),
+            //PriceToBook = CleanDecimal(input.PriceToBook),
+            //DividendYield = CleanPercent(input.DividendYield),
+            //ReturnOnEquity = CleanPercent(input.ReturnOnEquity),
+            //NetMargin = CleanPercent(input.NetMargin),
             EarningsPerShare = CleanDecimal(input.EarningsPerShare),
             Sector = input.Sector?.Trim()
         };

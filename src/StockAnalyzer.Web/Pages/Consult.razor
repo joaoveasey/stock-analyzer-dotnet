@@ -24,23 +24,60 @@
 
         <div class="mb-3">
             <label for="ticket" class="form-label">Ticket</label>
-            <input type="text" id="ticket" class="form-control" placeholder="Ex: PETR4" @bind="stock.Ticket" />
-        </div>
 
+            @if (stocks == null)
+            {
+                <p><em>Carregando ações...</em></p>
+            }
+            else if (!stocks.Any())
+            {
+                <p><em>Nenhuma ação disponível.</em></p>
+            }
+            else
+            {
+                <select id="ticket" class="form-select" @bind="selectedStockTicket">
+                    <option value="">-- Selecione uma ação --</option> @* Opção padrão vazia *@
+                    @foreach (var stockItem in stocks)
+                    {
+                        <option value="@stockItem.Stock">@stockItem.Stock</option>
+                    }
+                </select>
+            }
+        </div>
+        
         <div class="mb-3">
             <label for="currentPrice" class="form-label">Cotação Atual</label>
             <input @ref="currentPriceRef" type="text" id="currentPrice" class="form-control" placeholder="R$" @bind="stock.CurrentPrice" />
         </div>
 
         <div class="mb-3">
+            <label for="priceToEarnings" class="form-label">P/L</label>
+            <input type="text" id="priceToEarnings" class="form-control" placeholder="Ex: 2.50" @bind="stock.PriceToEarnings" />
+        </div>
+
+        <div class="mb-3">
+            <label for="earningPerShare" class="form-label">Lucro Por Ação</label>
+            <input type="text" id="earningPerShare" class="form-control" placeholder="Ex: 3,00" @bind="stock.EarningsPerShare" />
+        </div>
+
+        <div class="mb-3">
+            <label for="sector" class="form-label">Setor</label>
+            <input type="text" id="sector" class="form-control" placeholder="Ex: Financeiro" @bind="stock.Sector" />
+        </div>
+        @if (!string.IsNullOrEmpty(stockDetails.LogoUrl))
+        {
+            <img src="@stockDetails.LogoUrl" alt="Logo @stock.Ticket" style="width: 50px; height: 50px; float: right; margin-left: 10px; margin-bottom: 15px;" />
+        }
+        
+
+        
+
+        @* <div class="mb-3">
             <label for="twelveMonthChange" class="form-label">Variação 12 meses</label>
             <input @ref="changeRef" type="text" id="twelveMonthChange" class="form-control" placeholder="Ex: 15%" @bind="stock.TwelveMonthChange" />
         </div>
 
-        <div class="mb-3">
-            <label for="priceToEarnings" class="form-label">P/L</label>
-            <input type="text" id="priceToEarnings" class="form-control" placeholder="Ex: 2.50" @bind="stock.PriceToEarnings" />
-        </div>
+        
 
         <div class="mb-3">
             <label for="priceToBook" class="form-label">P/VP</label>
@@ -60,17 +97,7 @@
         <div class="mb-3">
             <label for="netMargin" class="form-label">Margem Líquida</label>
             <input @ref="marginRef" type="text" id="netMargin" class="form-control" placeholder="Ex: 7%" @bind="stock.NetMargin" />
-        </div>
-
-        <div class="mb-3">
-            <label for="earningPerShare" class="form-label">Lucro Por Ação</label>
-            <input type="text" id="earningPerShare" class="form-control" placeholder="Ex: 3,00" @bind="stock.EarningsPerShare" />
-        </div>
-
-        <div class="mb-3">
-            <label for="sector" class="form-label">Setor</label>
-            <input type="text" id="sector" class="form-control" placeholder="Ex: Financeiro" @bind="stock.Sector" />
-        </div>
+        </div> *@
 
         <button type="button"
                 style="background-color: #1E3A8A; color: white; border: none; padding: 0.5rem 4rem ;border-radius: 0.4rem; margin-top: 1rem; font-size: 1rem; margin-bottom:2rem"
@@ -88,7 +115,75 @@
 @code {
     private ElementReference currentPriceRef, changeRef, dividendRef, roeRef, marginRef;
     private StockAnalysisRequest stock = new();
+    private StockDetails stockDetails = new();
     protected List<string> validationErrors = new();
+
+    private List<StockApiResponse>? stocks;
+    private string? selectedStockTicket; 
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            stocks = await Http.GetFromJsonAsync<List<StockApiResponse>>("api/stocks");
+
+            if (stocks != null && stocks.Any())
+            {
+                selectedStockTicket = stocks.First().Stock;
+            }
+        }
+        catch (HttpRequestException ex)
+        {
+            Console.WriteLine($"Erro ao carregar ações: {ex.Message}");
+            stocks = new List<StockApiResponse>();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Ocorreu um erro inesperado: {ex.Message}");
+            stocks = new List<StockApiResponse>();
+        }
+    }
+
+    private async Task OnStockSelected(ChangeEventArgs e)
+    {
+        stockDetails.CurrentPrice = 0;
+        stockDetails.PriceEarnings = 0;
+        stockDetails.EarningsPerShare = 0;
+        stockDetails.SummaryProfile.Sector = null;
+        stockDetails.LogoUrl = null;
+
+        if (!string.IsNullOrEmpty(stock.Ticket))
+        {
+            try
+            {
+                var requestUrl = $"api/stocks/details?ticket={stock.Ticket}";
+                StockDetails? fetchedDetails = await Http.GetFromJsonAsync<StockDetails>(requestUrl);
+
+                if (fetchedDetails != null)
+                {
+                    // Mapeia os dados da API para o seu objeto de formulário
+                    stockDetails.CurrentPrice = fetchedDetails.CurrentPrice;
+                    stockDetails.PriceEarnings = fetchedDetails.PriceEarnings;
+                    stockDetails.EarningsPerShare = fetchedDetails.EarningsPerShare;
+                    stockDetails.SummaryProfile.Sector = fetchedDetails.SummaryProfile?.Sector; // Acesso seguro para SummaryProfile e Sector
+                    stockDetails.LogoUrl = fetchedDetails.LogoUrl;
+                }
+                else
+                {
+                    Console.WriteLine($"API retornou detalhes nulos para {stock.Ticket}.");
+                }
+            }
+            catch (HttpRequestException ex)
+            {
+                Console.WriteLine($"Erro ao carregar detalhes da ação {stock.Ticket}: {ex.Message}");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Ocorreu um erro inesperado ao carregar detalhes da ação {stock.Ticket}: {ex.Message}");
+            }
+
+        }
+    }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {

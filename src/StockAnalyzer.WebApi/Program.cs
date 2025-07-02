@@ -15,6 +15,16 @@ builder.Services.AddHttpClient<IDeepSeekService, DeepSeekService>();
 builder.Services.AddScoped<IBrapiService, BrapiService>();
 builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri("https://brapi.dev/api/") });
 
+builder.Services.AddCors(options =>
+{
+    options.AddDefaultPolicy(
+        policy =>
+        {
+            policy.WithOrigins("https://localhost:7059", "http://localhost:5105") // Adicione todas as origens permitidas
+                  .AllowAnyHeader()
+                  .AllowAnyMethod();
+        });
+});
 
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
@@ -27,6 +37,7 @@ var app = builder.Build();
 
 app.UseRouting();
 app.MapControllers();
+app.UseCors();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
